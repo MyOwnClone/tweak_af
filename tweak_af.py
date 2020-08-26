@@ -109,7 +109,7 @@ def test_func():
     b = _tv(10)
     c = _tv(2) + _tv(3)
 
-    print(f"{a}, {b}")
+    print(f"{a}, {b}, {c}")
 
     while True:
         print(_tv(2), _tv(4))
