@@ -5,7 +5,7 @@ import inspect
 tweak_dict = {}
 _call_dict = {}
 
-token_name = "_t" + "v" + "("
+token_name = "_t" + "v" + "("   # to not confuse our "parser"
 token_length = len(token_name)
 
 
@@ -83,6 +83,7 @@ def _get_order(line, inst):
         return index + 1
 
 
+# tv stands for tweakable value
 def _tv(default_value):
     f = inspect.currentframe().f_back
     line = f.f_lineno
