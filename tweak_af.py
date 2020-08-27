@@ -6,7 +6,7 @@ tweak_dict = {}
 call_dict = {}
 func_dict = {}
 
-token_name = "_t" + "v" + "("   # to not confuse our "parser"
+token_name = "t" + "v" + "("   # to not confuse our "parser"
 token_length = len(token_name)
 
 
@@ -55,7 +55,14 @@ def reload_tv_dict(call_filename):
         line_counter += 1
 
 
-def reload_func_dict(call_filename):
+def reload_func_dict(globals_param=None, call_filename=None):
+    if globals_param is None:
+        f = inspect.currentframe().f_back
+        globals_param = f.f_globals
+
+    if call_filename is None:
+        call_filename = inspect.stack()[1][1]
+
     with open(call_filename, "r") as f:
         content = f.readlines()
 
@@ -86,13 +93,13 @@ def reload_func_dict(call_filename):
             indendation = index
 
             if indendation <= function_intendation:  # end of previous func definition
-                func_lines = content[function_line_start:line_index]
+                func_lines = content[function_line_start-1:line_index]
 
                 # print(func_lines)
 
                 code = ''.join(cur_line for cur_line in func_lines)
 
-                exec(code, globals())
+                exec(code, globals_param)
 
                 inside_function = False
 
@@ -179,7 +186,7 @@ def _get_order(line, inst):
 
 
 # tv stands for tweakable value
-def _tv(default_value):
+def tv(default_value):
     f = inspect.currentframe().f_back
     line = f.f_lineno
     inst = f.f_lasti
@@ -187,7 +194,7 @@ def _tv(default_value):
     # we need to identify each _tv() call within a file, we need them unique, otherwise, the user would have to
     # supply key name
 
-    call_filename = __file__
+    call_filename = inspect.stack()[1][1]
 
     line_order = _get_order(line, inst)
 
@@ -202,18 +209,18 @@ def _tf():
 
 
 def test_func_inner():
-    print(f"inner: {_tv(8)}")
+    print(f"inner: {tv(8)}")
 
 
 def test_tweakable_vars_func():
-    a = _tv(00)
-    b = _tv(10)
-    c = _tv(2) + _tv(3)
+    a = tv(00)
+    b = tv(10)
+    c = tv(2) + tv(3)
 
     print(f"{a}, {b}, {c}")
 
     while True:
-        print(_tv(2), _tv(4))
+        print(tv(2), tv(4))
         test_func_inner()
 
 
@@ -222,7 +229,7 @@ def called_from_dummy():
 
 
 def dummy():
-    val = _tv(1)
+    val = tv(1)
     str_1 = "_1"
     return "dumb-one"+str_1+"_"+str(val)+"_"+called_from_dummy()
 
@@ -234,6 +241,21 @@ def test_tweakable_funcs_func():
 
     # print(_tf("dummy"))
     pass
+
+
+def tweak_reload_funcs():
+    reload_func_dict()
+
+
+def tweakable(f):
+    frame = inspect.currentframe().f_back
+    reload_func_dict(frame.f_globals, inspect.stack()[1][1])
+
+    def do_it(*args, **kwargs):
+        result = f(*args, **kwargs)
+        return result
+
+    return do_it
 
 
 if __name__ == '__main__':
