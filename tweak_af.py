@@ -66,11 +66,9 @@ def reload_func_dict(globals_param=None, call_filename=None):
     with open(call_filename, "r") as f:
         content = f.readlines()
 
-    # content = [x.strip() for x in content]
-
     inside_function = False
     function_name = None
-    function_intendation = -1
+    function_indentation = -1
     function_line_start = -1
 
     def_token = "def"
@@ -90,9 +88,9 @@ def reload_func_dict(globals_param=None, call_filename=None):
             while index < len(line) and line[index].isspace():
                 index += 1
 
-            indendation = index
+            indentation = index
 
-            if indendation <= function_intendation:  # end of previous func definition
+            if indentation <= function_indentation:  # end of previous func definition
                 func_lines = content[function_line_start-1:line_index]
 
                 # print(func_lines)
@@ -127,7 +125,7 @@ def reload_func_dict(globals_param=None, call_filename=None):
                 continue
 
             inside_function = True
-            function_intendation = index_backup
+            function_indentation = index_backup
 
             if index < line_length:
                 name_start = index
@@ -148,12 +146,7 @@ def reload_func_dict(globals_param=None, call_filename=None):
 
                 continue
 
-
         line_index += 1
-
-
-
-
 
 
 def resolve_value(default_value, call_filename, line, line_order):
@@ -203,46 +196,6 @@ def tv(default_value):
     return resolve_value(default_value, call_filename, line, line_order)
 
 
-# tf stands for tweakable function
-def _tf():
-    pass
-
-
-def test_func_inner():
-    print(f"inner: {tv(8)}")
-
-
-def test_tweakable_vars_func():
-    a = tv(00)
-    b = tv(10)
-    c = tv(2) + tv(3)
-
-    print(f"{a}, {b}, {c}")
-
-    while True:
-        print(tv(2), tv(4))
-        test_func_inner()
-
-
-def called_from_dummy():
-    return "inner"
-
-
-def dummy():
-    val = tv(1)
-    str_1 = "_1"
-    return "dumb-one"+str_1+"_"+str(val)+"_"+called_from_dummy()
-
-
-def test_tweakable_funcs_func():
-    while True:
-        reload_func_dict(__file__)
-        print(dummy())
-
-    # print(_tf("dummy"))
-    pass
-
-
 def tweak_reload_funcs():
     reload_func_dict()
 
@@ -256,11 +209,3 @@ def tweakable(f):
         return result
 
     return do_it
-
-
-if __name__ == '__main__':
-    # test_tweakable_vars_func()
-
-    #reload_func_dict(__file__)
-
-    test_tweakable_funcs_func()
