@@ -3,13 +3,14 @@
 import inspect
 
 tweak_dict = {}
-_call_dict = {}
+call_dict = {}
+func_dict = {}
 
 token_name = "_t" + "v" + "("   # to not confuse our "parser"
 token_length = len(token_name)
 
 
-def reload_dict(call_filename):
+def reload_tv_dict(call_filename):
     with open(call_filename, "r") as f:
         content = f.readlines()
 
@@ -54,8 +55,102 @@ def reload_dict(call_filename):
         line_counter += 1
 
 
+def reload_func_dict(call_filename):
+    with open(call_filename, "r") as f:
+        content = f.readlines()
+
+    # content = [x.strip() for x in content]
+
+    inside_function = False
+    function_name = None
+    function_intendation = -1
+    function_line_start = -1
+
+    def_token = "def"
+    def_token_length = len(def_token)
+
+    line_index = 0
+
+    for line in content:
+
+        if len(line.strip()) == 0:
+            line_index += 1  # :-(
+            continue
+
+        if inside_function:
+            index = 0
+
+            while index < len(line) and line[index].isspace():
+                index += 1
+
+            indendation = index
+
+            if indendation <= function_intendation:  # end of previous func definition
+                func_lines = content[function_line_start:line_index]
+
+                # print(func_lines)
+
+                code = ''.join(cur_line for cur_line in func_lines)
+
+                exec(code, globals())
+
+                inside_function = False
+
+        index = line.find(def_token)
+        line_length = len(line)
+        if index != -1:
+            if index > 0 and line[index-1] == "\"":
+                line_index += 1  # :-(
+                continue
+
+            index_backup = index
+
+            index += def_token_length
+            start_index = index
+
+            while index < line_length and line[index].isspace():
+                index += 1
+
+            name_start = -1
+            name_end = -1
+
+            # skip variable definitions named with "def_"
+            if index == start_index:
+                line_index += 1  # :-(
+                continue
+
+            inside_function = True
+            function_intendation = index_backup
+
+            if index < line_length:
+                name_start = index
+
+                while index < line_length and (line[index].isalnum() or line[index] == '_'):
+                    index += 1
+
+                name_end = index
+
+            if name_start != -1 and name_end != -1:
+                name = line[name_start:name_end]
+
+                # print(name)
+                function_name = name
+                function_line_start = line_index
+
+                line_index += 1  # :-(
+
+                continue
+
+
+        line_index += 1
+
+
+
+
+
+
 def resolve_value(default_value, call_filename, line, line_order):
-    reload_dict(call_filename)
+    reload_tv_dict(call_filename)
 
     if call_filename in tweak_dict and line in tweak_dict[call_filename] \
             and line_order in tweak_dict[call_filename][line]:
@@ -65,20 +160,20 @@ def resolve_value(default_value, call_filename, line, line_order):
 
 
 def _get_order(line, inst):
-    if __file__ not in _call_dict:
-        _call_dict[__file__] = {}
+    if __file__ not in call_dict:
+        call_dict[__file__] = {}
 
-    if line not in _call_dict[__file__]:
-        _call_dict[__file__][line] = []
+    if line not in call_dict[__file__]:
+        call_dict[__file__][line] = []
 
     try:
-        index = _call_dict[__file__][line].index(inst)
+        index = call_dict[__file__][line].index(inst)
     except ValueError:
         index = -1
 
     if index == -1:
-        _call_dict[__file__][line].append(inst)
-        return len(_call_dict[__file__][line])
+        call_dict[__file__][line].append(inst)
+        return len(call_dict[__file__][line])
     else:
         return index + 1
 
@@ -101,11 +196,16 @@ def _tv(default_value):
     return resolve_value(default_value, call_filename, line, line_order)
 
 
+# tf stands for tweakable function
+def _tf():
+    pass
+
+
 def test_func_inner():
     print(f"inner: {_tv(8)}")
 
 
-def test_func():
+def test_tweakable_vars_func():
     a = _tv(00)
     b = _tv(10)
     c = _tv(2) + _tv(3)
@@ -117,5 +217,28 @@ def test_func():
         test_func_inner()
 
 
+def called_from_dummy():
+    return "inner"
+
+
+def dummy():
+    val = _tv(1)
+    str_1 = "_1"
+    return "dumb-one"+str_1+"_"+str(val)+"_"+called_from_dummy()
+
+
+def test_tweakable_funcs_func():
+    while True:
+        reload_func_dict(__file__)
+        print(dummy())
+
+    # print(_tf("dummy"))
+    pass
+
+
 if __name__ == '__main__':
-    test_func()
+    # test_tweakable_vars_func()
+
+    #reload_func_dict(__file__)
+
+    test_tweakable_funcs_func()
