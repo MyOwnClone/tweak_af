@@ -9,8 +9,14 @@ _func_dict = {}
 _token_name = "t" + "v" + "("   # to not confuse our "parser"
 _token_length = len(_token_name)
 
+_g_tv_enabled = True
 
-def reload_tv_dict(call_filename):
+
+def set_tv_enabled(enabled):
+    global _g_tv_enabled
+    _g_tv_enabled = enabled
+
+def _reload_tv_dict(call_filename):
     with open(call_filename, "r") as f:
         content = f.readlines()
 
@@ -55,7 +61,7 @@ def reload_tv_dict(call_filename):
         line_counter += 1
 
 
-def reload_functions(globals_param=None, call_filename=None):
+def _reload_functions(globals_param=None, call_filename=None):
     if globals_param is None:
         f = inspect.currentframe().f_back
         globals_param = f.f_globals
@@ -144,8 +150,8 @@ def reload_functions(globals_param=None, call_filename=None):
         line_index += 1
 
 
-def resolve_value(default_value, call_filename, line, line_order):
-    reload_tv_dict(call_filename)
+def _resolve_value(default_value, call_filename, line, line_order):
+    _reload_tv_dict(call_filename)
 
     if call_filename in _tweak_dict and line in _tweak_dict[call_filename] \
             and line_order in _tweak_dict[call_filename][line]:
@@ -175,6 +181,9 @@ def _get_order(line, inst):
 
 # tv stands for tweakable value
 def tv(default_value):
+    if not _g_tv_enabled:
+        return default_value
+
     f = inspect.currentframe().f_back
     line = f.f_lineno
     inst = f.f_lasti
@@ -188,15 +197,11 @@ def tv(default_value):
 
     # print(f"_tv() called at {call_filename}:{line}:{line_order}")
 
-    return resolve_value(default_value, call_filename, line, line_order)
+    return _resolve_value(default_value, call_filename, line, line_order)
 
 
-def tweakable(f):  # TODO: make this work
+def tf(f):
     frame = inspect.currentframe().f_back
-    reload_functions(frame.f_globals, inspect.stack()[1][1])
+    _reload_functions(frame.f_globals, inspect.stack()[1][1])
 
-    def do_it(*args, **kwargs):
-        result = f(*args, **kwargs)
-        return result
-
-    return do_it
+    return f()
