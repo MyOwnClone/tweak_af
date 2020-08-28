@@ -2,12 +2,12 @@
 
 import inspect
 
-tweak_dict = {}
-call_dict = {}
-func_dict = {}
+_tweak_dict = {}
+_call_dict = {}
+_func_dict = {}
 
-token_name = "t" + "v" + "("   # to not confuse our "parser"
-token_length = len(token_name)
+_token_name = "t" + "v" + "("   # to not confuse our "parser"
+_token_length = len(_token_name)
 
 
 def reload_tv_dict(call_filename):
@@ -24,7 +24,7 @@ def reload_tv_dict(call_filename):
         found_on_line_counter = 0
 
         while True:
-            index = line.find(token_name, start)
+            index = line.find(_token_name, start)
 
             if index == -1:
                 break
@@ -34,7 +34,7 @@ def reload_tv_dict(call_filename):
 
             start = index + 1
 
-            value_index = index + token_length
+            value_index = index + _token_length
             value_end = line.find(")", value_index)
 
             value = line[value_index: value_end]
@@ -44,18 +44,18 @@ def reload_tv_dict(call_filename):
 
             found_on_line_counter += 1
 
-            if call_filename not in tweak_dict:
-                tweak_dict[call_filename] = {}
+            if call_filename not in _tweak_dict:
+                _tweak_dict[call_filename] = {}
 
-            if (line_counter + 1) not in tweak_dict[call_filename]:
-                tweak_dict[call_filename][(line_counter + 1)] = {}
+            if (line_counter + 1) not in _tweak_dict[call_filename]:
+                _tweak_dict[call_filename][(line_counter + 1)] = {}
 
-            tweak_dict[call_filename][(line_counter + 1)][found_on_line_counter] = eval(value)
+            _tweak_dict[call_filename][(line_counter + 1)][found_on_line_counter] = eval(value)
 
         line_counter += 1
 
 
-def reload_func_dict(globals_param=None, call_filename=None):
+def reload_functions(globals_param=None, call_filename=None):
     if globals_param is None:
         f = inspect.currentframe().f_back
         globals_param = f.f_globals
@@ -67,7 +67,6 @@ def reload_func_dict(globals_param=None, call_filename=None):
         content = f.readlines()
 
     inside_function = False
-    function_name = None
     function_indentation = -1
     function_line_start = -1
 
@@ -136,10 +135,6 @@ def reload_func_dict(globals_param=None, call_filename=None):
                 name_end = index
 
             if name_start != -1 and name_end != -1:
-                name = line[name_start:name_end]
-
-                # print(name)
-                function_name = name
                 function_line_start = line_index
 
                 line_index += 1  # :-(
@@ -152,28 +147,28 @@ def reload_func_dict(globals_param=None, call_filename=None):
 def resolve_value(default_value, call_filename, line, line_order):
     reload_tv_dict(call_filename)
 
-    if call_filename in tweak_dict and line in tweak_dict[call_filename] \
-            and line_order in tweak_dict[call_filename][line]:
-        return tweak_dict[call_filename][line][line_order]
+    if call_filename in _tweak_dict and line in _tweak_dict[call_filename] \
+            and line_order in _tweak_dict[call_filename][line]:
+        return _tweak_dict[call_filename][line][line_order]
     else:
         return default_value
 
 
 def _get_order(line, inst):
-    if __file__ not in call_dict:
-        call_dict[__file__] = {}
+    if __file__ not in _call_dict:
+        _call_dict[__file__] = {}
 
-    if line not in call_dict[__file__]:
-        call_dict[__file__][line] = []
+    if line not in _call_dict[__file__]:
+        _call_dict[__file__][line] = []
 
     try:
-        index = call_dict[__file__][line].index(inst)
+        index = _call_dict[__file__][line].index(inst)
     except ValueError:
         index = -1
 
     if index == -1:
-        call_dict[__file__][line].append(inst)
-        return len(call_dict[__file__][line])
+        _call_dict[__file__][line].append(inst)
+        return len(_call_dict[__file__][line])
     else:
         return index + 1
 
@@ -196,13 +191,9 @@ def tv(default_value):
     return resolve_value(default_value, call_filename, line, line_order)
 
 
-def tweak_reload_funcs():
-    reload_func_dict()
-
-
-def tweakable(f):
+def tweakable(f):  # TODO: make this work
     frame = inspect.currentframe().f_back
-    reload_func_dict(frame.f_globals, inspect.stack()[1][1])
+    reload_functions(frame.f_globals, inspect.stack()[1][1])
 
     def do_it(*args, **kwargs):
         result = f(*args, **kwargs)
