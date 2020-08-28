@@ -13,6 +13,6 @@ if __name__ == '__main__':
     # val = tv(0)
 
     while True:
-        #print(tv(1))
-        reload_func_dict()
-        print(test_func())
+        print(tv(3.14))
+        #reload_func_dict()
+        #print(test_func())

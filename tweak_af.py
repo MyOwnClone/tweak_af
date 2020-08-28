@@ -50,7 +50,7 @@ def reload_tv_dict(call_filename):
             if (line_counter + 1) not in tweak_dict[call_filename]:
                 tweak_dict[call_filename][(line_counter + 1)] = {}
 
-            tweak_dict[call_filename][(line_counter + 1)][found_on_line_counter] = int(value)
+            tweak_dict[call_filename][(line_counter + 1)][found_on_line_counter] = eval(value)
 
         line_counter += 1
 
