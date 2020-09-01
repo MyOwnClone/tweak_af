@@ -80,6 +80,7 @@ TODOs:
 * provide licence (probably MIT or BSD one)
 * use GIFs for README!
 * fix all the `FIXME`s and `TODO`s! (which basically means rewriting everything in more pythonic and efficient way)
+* pip package
 
     
     
