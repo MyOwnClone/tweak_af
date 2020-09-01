@@ -4,7 +4,7 @@ import inspect
 
 _tweak_dict = {}
 _call_dict = {}
-_func_dict = {}
+_func_dict = {}  # actually, not needed, TODO: remove
 
 _token_name = "t" + "v" + "("   # to not confuse our "parser"
 _token_length = len(_token_name)
@@ -61,6 +61,8 @@ def _reload_tv_dict(call_filename):
         line_counter += 1
 
 
+# usage of dictionary is redundant, not needed at all, TODO: rewrite
+# TODO: use fs_notify and reload only when backing file changes
 def _reload_functions(globals_param=None, call_filename=None):
     if globals_param is None:
         f = inspect.currentframe().f_back
@@ -160,26 +162,27 @@ def _resolve_value(default_value, call_filename, line, line_order):
         return default_value
 
 
-def _get_order(line, inst):
+# terrible usage of dict(), I know, TODO: rewrite
+def _get_call_order(line, inst):
     if __file__ not in _call_dict:
-        _call_dict[__file__] = {}
+        _call_dict[__file__] = {}   # TODO: rewrite
 
     if line not in _call_dict[__file__]:
         _call_dict[__file__][line] = []
 
     try:
-        index = _call_dict[__file__][line].index(inst)
+        index = _call_dict[__file__][line].index(inst)  # TODO: rewrite
     except ValueError:
         index = -1
 
     if index == -1:
-        _call_dict[__file__][line].append(inst)
-        return len(_call_dict[__file__][line])
+        _call_dict[__file__][line].append(inst) # TODO: rewrite
+        return len(_call_dict[__file__][line])  # TODO: rewrite
     else:
         return index + 1
 
 
-# tv stands for tweakable value
+# tv stands for "tweakable value"
 def tv(default_value):
     if not _g_tv_enabled:
         return default_value
@@ -193,13 +196,14 @@ def tv(default_value):
 
     call_filename = inspect.stack()[1][1]
 
-    line_order = _get_order(line, inst)
+    line_call_order = _get_call_order(line, inst)
 
-    # print(f"_tv() called at {call_filename}:{line}:{line_order}")
+    # print(f"_tv() called at {call_filename}:{line}:{line_call_order}")
 
-    return _resolve_value(default_value, call_filename, line, line_order)
+    return _resolve_value(default_value, call_filename, line, line_call_order)
 
 
+# "tweakable function"
 def tf(f):
     frame = inspect.currentframe().f_back
     _reload_functions(frame.f_globals, inspect.stack()[1][1])
