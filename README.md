@@ -16,12 +16,12 @@ Python "library" for live coding and tweaking long (already) running scripts (ML
 (inspired by https://github.com/joeld42/ld48jovoc/blob/master/util/tweakval/tweakval.cpp and friends)
 
 * code it (`test_tv.py`):
-
-
+```
     from tweak_af import tv
 
     while True:
         print(tv(0))
+```
         
 * run it: `python test_tv.py &` (in the background, not necessary, but you can use same terminal for editing)
     * you will see that it prints all zeroes
@@ -34,8 +34,7 @@ Python "library" for live coding and tweaking long (already) running scripts (ML
 *Tweakable functions:*
 
 * code it (`test_tf.py`):
-
-
+```
     from tweak_af import tf
     
     def test_func(a, b):
@@ -43,7 +42,7 @@ Python "library" for live coding and tweaking long (already) running scripts (ML
         
     while True:
         print(tf(lambda: test_func(1, 2)) # yeah, lambda is actually needed, because reasons
-        
+```        
         
 * run it: `python test_tf.py &` (in the background, not necessary, but you can use same terminal for editing)
     * it will print, you guessed right, `3`s
