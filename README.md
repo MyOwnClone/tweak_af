@@ -1,6 +1,6 @@
 Tweak AF*
 ===========================
-(* means also buggy AF!!!) 
+(* means also buggy and WIP AF!!!) 
 
 Python "library" for live coding and tweaking long (already) running scripts (ML training, crawlers).
 
