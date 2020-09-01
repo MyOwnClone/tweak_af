@@ -1,7 +1,7 @@
 # 1. just start the script and let it running
 # 2. edit this source file in IDE or in another terminal
 
-from tweak_af import tv, tf
+from tweak_af import tv, tf  # , set_tweakables_enabled
 
 
 # 3. try to change body of this function - while the original script is still running
@@ -13,6 +13,9 @@ def str_test_func(param):
 
 
 if __name__ == '__main__':
+    # set_tweakables_enabled(False)  # use this to disable tv/tfs, in this case, they will return defaults or act as
+    # pass through
+
     while True:
         # 4. try to change the tweakable value (3) to something else - while the original script is still running
         print(tf(lambda: test_func(1, tv(3))))

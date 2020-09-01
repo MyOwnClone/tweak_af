@@ -1,10 +1,10 @@
+# tool for live coding and tweaking long running scripts (ML training, crawlers)
 # inspired by: https://github.com/joeld42/ld48jovoc/blob/master/util/tweakval/tweakval.cpp
 
 import inspect
 
 _tweak_dict = {}
 _call_dict = {}
-_func_dict = {}  # actually, not needed, TODO: remove
 
 _token_name = "t" + "v" + "("   # to not confuse our "parser"
 _token_length = len(_token_name)
@@ -12,10 +12,11 @@ _token_length = len(_token_name)
 _g_tv_enabled = True
 
 
-def set_tv_enabled(enabled):
+def set_tweakables_enabled(enabled):
     global _g_tv_enabled
     _g_tv_enabled = enabled
 
+# TODO: use fs_notify and reload only when backing file changes
 def _reload_tv_dict(call_filename):
     with open(call_filename, "r") as f:
         content = f.readlines()
@@ -51,17 +52,16 @@ def _reload_tv_dict(call_filename):
             found_on_line_counter += 1
 
             if call_filename not in _tweak_dict:
-                _tweak_dict[call_filename] = {}
+                _tweak_dict[call_filename] = {}  # TODO: rewrite
 
             if (line_counter + 1) not in _tweak_dict[call_filename]:
-                _tweak_dict[call_filename][(line_counter + 1)] = {}
+                _tweak_dict[call_filename][(line_counter + 1)] = {}  # TODO: rewrite
 
             _tweak_dict[call_filename][(line_counter + 1)][found_on_line_counter] = eval(value)
 
         line_counter += 1
 
 
-# usage of dictionary is redundant, not needed at all, TODO: rewrite
 # TODO: use fs_notify and reload only when backing file changes
 def _reload_functions(globals_param=None, call_filename=None):
     if globals_param is None:
@@ -82,6 +82,8 @@ def _reload_functions(globals_param=None, call_filename=None):
     def_token_length = len(def_token)
 
     line_index = 0
+
+    # TODO: rewrite the continue parts
 
     for line in content:
 
@@ -151,13 +153,13 @@ def _reload_functions(globals_param=None, call_filename=None):
 
         line_index += 1
 
-
+# terrible usage of dict(), I know, TODO: rewrite
 def _resolve_value(default_value, call_filename, line, line_order):
     _reload_tv_dict(call_filename)
 
     if call_filename in _tweak_dict and line in _tweak_dict[call_filename] \
-            and line_order in _tweak_dict[call_filename][line]:
-        return _tweak_dict[call_filename][line][line_order]
+            and line_order in _tweak_dict[call_filename][line]:  # TODO: rewrite
+        return _tweak_dict[call_filename][line][line_order]  # TODO: rewrite
     else:
         return default_value
 
@@ -189,14 +191,14 @@ def tv(default_value):
 
     f = inspect.currentframe().f_back
     line = f.f_lineno
-    inst = f.f_lasti
+    bytecode_instruction_offset = f.f_lasti
 
     # we need to identify each _tv() call within a file, we need them unique, otherwise, the user would have to
     # supply key name
 
     call_filename = inspect.stack()[1][1]
 
-    line_call_order = _get_call_order(line, inst)
+    line_call_order = _get_call_order(line, bytecode_instruction_offset)
 
     # print(f"_tv() called at {call_filename}:{line}:{line_call_order}")
 
@@ -205,6 +207,9 @@ def tv(default_value):
 
 # "tweakable function"
 def tf(f):
+    if not _g_tv_enabled:
+        return f()
+
     frame = inspect.currentframe().f_back
     _reload_functions(frame.f_globals, inspect.stack()[1][1])
 
