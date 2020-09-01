@@ -2,7 +2,7 @@ Tweak AF*
 ===========================
 (* means also buggy AF!!!) 
 
-Python "library" for live coding and tweaking long running scripts (ML training, crawlers).
+Python "library" for live coding and tweaking long (already) running scripts (ML training, crawlers).
 
 * Have you ever wanted to tweak some constants in your code, WHICH IS ALREADY RUNNING?
     * use `tweak_af.tv()` !!!
