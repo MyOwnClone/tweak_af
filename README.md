@@ -58,7 +58,7 @@ Python "library" for live coding and tweaking long running scripts (ML training,
     
 Tests:
 ==
-* run `test_tf.sh` and `test_tv.sh`, if they exit, it probably means that this library works
+* run `test.sh` (or only `test_tf.sh`, `test_tv.sh`), if they exit, it probably means that this library works
     
 Notes:
 ==

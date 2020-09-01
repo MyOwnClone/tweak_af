@@ -1,0 +1,1 @@
+./test_tf.sh && ./test_tv.sh
