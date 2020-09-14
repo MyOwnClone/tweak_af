@@ -83,7 +83,7 @@ TODOs:
 * use fs_notify/inotify and reload dictionaries only when backing file changes
 * better tests without bash usage
 * method support
-* startup and tweak as a service business /sarcasm
+* startup and `tweak-as-a-service` business /sarcasm
 * provide licence (probably MIT or BSD one, NOT gpl)
 * use GIFs for README!
 * fix all the `FIXME`s and `TODO`s! (which basically means rewriting everything in more `pythonic` and efficient way)
