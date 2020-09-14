@@ -70,12 +70,13 @@ Notes:
 ==
 * methods not supported (yet)
 * tested only for Python 3.8 on WSL 2 and macOS 10.14.6 (Mojave)
-* you can disable dynamic behavior by `set_tweakables_enabled(False)`, in this case, it will use defaults
+* you can disable dynamic behavior by `set_tweakables_enabled(False)`, in this case, it will use defaults (or act as passthrough)
 * very buggy, poorly written
 * this will break debugger (expected)
 * not CPU efficient and memory friendly
     * use only for simpler use cases (few functions/values as `tf()`/`tv()`) or not in production code
 * use at your own risk, there are no guarantees
+* C# version in the works
 
 TODOs:
 ==
@@ -83,9 +84,9 @@ TODOs:
 * better tests without bash usage
 * method support
 * startup and tweak as a service business /sarcasm
-* provide licence (probably MIT or BSD one)
+* provide licence (probably MIT or BSD one, NOT gpl)
 * use GIFs for README!
-* fix all the `FIXME`s and `TODO`s! (which basically means rewriting everything in more pythonic and efficient way)
+* fix all the `FIXME`s and `TODO`s! (which basically means rewriting everything in more `pythonic` and efficient way)
 * pip package
 * make README.md more fancy and readable
 
