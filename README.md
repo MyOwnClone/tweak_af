@@ -3,6 +3,7 @@ Tweak AF*
 (* means also buggy and WIP AF!!!) 
 
 Python "library" for live coding and tweaking long (already) running scripts (ML training, crawlers).
+--
 
 * Have you ever wanted to tweak some constants in your code, WHICH IS ALREADY RUNNING?
     * use `tweak_af.tv()` !!!
@@ -14,6 +15,8 @@ Python "library" for live coding and tweaking long (already) running scripts (ML
 
 *Tweakable values:*
 (inspired by https://github.com/joeld42/ld48jovoc/blob/master/util/tweakval/tweakval.cpp and friends)
+
+TODO: fancy GIF here
 
 * code it (`test_tv.py`):
 ```
@@ -32,6 +35,8 @@ Python "library" for live coding and tweaking long (already) running scripts (ML
     * Note 2: value is evaluated by `eval()` call, so if there is some exception thrown, it will crash your running script
     
 *Tweakable functions:*
+
+TODO: fancy GIF here
 
 * code it (`test_tf.py`):
 ```
@@ -58,12 +63,13 @@ Python "library" for live coding and tweaking long (already) running scripts (ML
     
 Tests:
 ==
+* `chmod u+x test.sh`
 * run `test.sh` (or only `test_tf.sh`, `test_tv.sh`), if they exit, it probably means that this library works
     
 Notes:
 ==
 * methods not supported (yet)
-* tested only for Python 3.8
+* tested only for Python 3.8 on WSL 2 and macOS 10.14.6 (Mojave)
 * you can disable dynamic behavior by `set_tweakables_enabled(False)`, in this case, it will use defaults
 * very buggy, poorly written
 * this will break debugger (expected)
@@ -81,6 +87,7 @@ TODOs:
 * use GIFs for README!
 * fix all the `FIXME`s and `TODO`s! (which basically means rewriting everything in more pythonic and efficient way)
 * pip package
+* make README.md more fancy and readable
 
     
     
