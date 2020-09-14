@@ -19,12 +19,11 @@ def str_test_func(param):
 
 
 if __name__ == '__main__':
-    # set_tweakables_enabled(False)  # use this to disable tv/tfs, in this case, they will return defaults or act as
-    # pass through
+    # set_tweakables_enabled(False)  # use this to disable tv/tf functions, in this case, they will return defaults or act as pass through
 
     while True:
         # 4. try to change the tweakable value (3) to something else - while the original script is still running
         print(tf(lambda: test_func(1, tv(3))))  # lambda is currently needed, because reasons :-)
         print(tf(lambda: str_test_func(tv("original"))))
 
-# 5. you can break tv() logic by adding new lines above it, but tf() will work when adding new lines to functions
+# Optional: 5. you can break tv() logic by adding new lines above it, but tf() will work when adding new lines to functions
